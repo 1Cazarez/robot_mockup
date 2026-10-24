@@ -2627,7 +2627,6 @@ body[data-not-sent] > #vis-container ~ #not-sent {
 .row label{font-size:13px;color:var(--text-secondary);min-width:72px}
 .row input[type="range"]{min-width:0;flex:1}
 .lighting-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.lighting-row #sws{flex:1;min-width:120px}
 .sw{width:28px;height:28px;border-radius:50%;border:2px solid var(--surface-2);box-shadow:0 0 0 1px var(--border-strong);cursor:pointer;padding:0;flex:none}
 .sw.on{box-shadow:0 0 0 2px var(--text-primary)}
 .pt{display:flex;align-items:center;gap:8px;padding:9px 10px;border:0.5px solid var(--border);border-radius:var(--radius);font-size:13px;cursor:pointer;background:var(--surface-2);color:var(--text-primary);text-align:left;min-height:44px}
@@ -2647,7 +2646,6 @@ body[data-not-sent] > #vis-container ~ #not-sent {
 <div class="row"><label for="ex">Explode</label><input type="range" id="ex" min="0" max="100" step="1" value="0" style="flex:1;"></div>
 <div class="row lighting-row">
 <button id="lt" style="font-size:13px;"><i class="ti ti-bulb" aria-hidden="true" style="font-size:16px;vertical-align:-2px;margin-right:4px;"></i><span>Underglow on</span></button>
-<div id="sws" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
 </div>
 <div class="row"><label for="br">Brightness</label><input type="range" id="br" min="5" max="100" step="1" value="70" style="flex:1;"></div>
 </div>
@@ -2895,10 +2893,8 @@ function pick(k){sel=sel===k?null:k;Object.keys(parts).forEach(n=>mats(parts[n].
 list.querySelectorAll('.pt').forEach(b=>b.classList.toggle('on',b.dataset.k===sel));
 info.innerHTML=sel?'<div style="font-weight:500;color:var(--text-primary);margin-bottom:2px;">'+parts[sel].name+'</div>'+parts[sel].info:hint;}
 
-let lightOn=true,col='#ffb347',bri=.7;
+let lightOn=true,col='#2bff88',bri=.7;
 function applyLight(){const c=new THREE.Color(col);const k=lightOn?bri:0;ledMat.emissive.copy(c);ledMat.emissiveIntensity=lightOn?.8+2.2*bri:0;ledMat.color.set(lightOn?'#ffffff':'#f2eee2');glowMat.color.copy(c);glowMat.opacity=.55*k;ulights.forEach(l=>{l.color.copy(c);l.intensity=650*k;});}
-const sws=document.getElementById('sws');
-[['Amber','#ffb347'],['White','#f4f6ff'],['Ice blue','#3fb6ff'],['Purple','#9b5cff'],['Green','#2bff88'],['Red','#ff3b3b']].forEach(([n,h],i)=>{const b=document.createElement('button');b.className='sw'+(i?'':' on');b.style.background=h;b.setAttribute('aria-label',n+' underglow');b.onclick=()=>{col=h;sws.querySelectorAll('.sw').forEach(s=>s.classList.toggle('on',s===b));applyLight();};sws.appendChild(b);});
 const lt=document.getElementById('lt');lt.onclick=()=>{lightOn=!lightOn;lt.querySelector('span').textContent=lightOn?'Underglow on':'Underglow off';applyLight();};
 document.getElementById('br').oninput=e=>{bri=e.target.value/100;applyLight();};applyLight();
 let exT=0,ex=0;document.getElementById('ex').oninput=e=>{exT=+e.target.value;};
