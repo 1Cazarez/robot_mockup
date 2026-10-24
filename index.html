@@ -2619,7 +2619,8 @@ body[data-not-sent] > #vis-container ~ #not-sent {
     </defs>
   </svg><div id="vis-container"><h2 class="sr-only">Realistic interactive 3D model of an ACEBOTT mecanum robot with a 5-DOF arm, Raspberry Pi 5 with Active Cooler and AI HAT+, camera, PIR sensor, IMU, power system and an LED underglow strip, with zoom, explode and lighting controls. Measurements in millimetres.</h2>
 <style>
-#vp{position:relative;width:100%;height:clamp(280px,58vw,520px);min-height:280px;border-radius:16px;overflow:hidden;background:#16191e}
+.model-container{position:relative;width:100%;margin:0 0 12px;padding:8px;border:1px solid var(--border);border-radius:16px;background:var(--surface-1);overflow:hidden;overscroll-behavior:contain;contain:layout paint}
+#vp{position:relative;display:block;width:100%;height:clamp(280px,58vw,520px);min-height:280px;border-radius:12px;overflow:hidden;background:#16191e}
 #vp canvas{display:block;width:100%;height:100%;touch-action:none}
 .controls{display:grid;gap:2px;margin:0 0 12px;padding:10px 12px;border:1px solid var(--border);border-radius:12px;background:var(--surface-1)}
 .row{display:flex;align-items:center;gap:10px;margin:8px 0;min-width:0}
@@ -2650,7 +2651,9 @@ body[data-not-sent] > #vis-container ~ #not-sent {
 </div>
 <div class="row"><label for="br">Brightness</label><input type="range" id="br" min="5" max="100" step="1" value="70" style="flex:1;"></div>
 </div>
+<div class="model-container" aria-label="Interactive robot model">
 <div id="vp"><div id="msg" style="padding:140px 16px;text-align:center;font-size:13px;color:#9aa3ad;">Loading 3D model…</div></div>
+</div>
 <div id="info" style="background:var(--surface-1);border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.6;color:var(--text-secondary);margin:8px 0 12px;min-height:64px;">Drag to orbit, use the zoom slider or pinch. Tap a part to focus on it; tap again to see everything.</div>
 <div id="list" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;"></div>
 <p style="font-size:12px;color:var(--text-muted);margin:12px 0 0;line-height:1.5;">Units: mm. Overall ≈ 250 L × 170 W × 210 H. Pi 5, cooler, AI HAT+, PIR and 18650 sizes use published dimensions; chassis, arm, converter and strip layout are estimates. Lidar left off (phase 2).</p>
@@ -2691,7 +2694,7 @@ const resizeRenderer=()=>{
 };
 const resizeObserver=new ResizeObserver(resizeRenderer);
 resizeObserver.observe(host);
-const ctl=new OrbitControls(cam,rn.domElement);ctl.target.set(0,95,-10);ctl.enableDamping=true;ctl.autoRotate=true;ctl.autoRotateSpeed=0.7;ctl.minDistance=150;ctl.maxDistance=900;ctl.maxPolarAngle=Math.PI*0.495;ctl.enablePan=false;
+const ctl=new OrbitControls(cam,rn.domElement);ctl.target.set(0,95,-10);ctl.enableDamping=true;ctl.autoRotate=true;ctl.autoRotateSpeed=0.7;ctl.minDistance=150;ctl.maxDistance=900;ctl.maxPolarAngle=Math.PI*0.495;ctl.enablePan=false;ctl.enableZoom=false;
 ctl.addEventListener('start',()=>ctl.autoRotate=false);
 const key=new THREE.DirectionalLight(0xffffff,2.4);key.position.set(-240,430,-260);key.castShadow=true;key.shadow.mapSize.set(2048,2048);key.shadow.radius=5;key.shadow.bias=-0.0003;
 Object.assign(key.shadow.camera,{left:-280,right:280,top:280,bottom:-280,near:50,far:1200});scene.add(key);
