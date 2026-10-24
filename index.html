@@ -2619,10 +2619,14 @@ body[data-not-sent] > #vis-container ~ #not-sent {
     </defs>
   </svg><div id="vis-container"><h2 class="sr-only">Realistic interactive 3D model of an ACEBOTT mecanum robot with a 5-DOF arm, Raspberry Pi 5 with Active Cooler and AI HAT+, camera, PIR sensor, IMU, power system and an LED underglow strip, with zoom, explode and lighting controls. Measurements in millimetres.</h2>
 <style>
-#vp{position:relative;width:100%;border-radius:16px;overflow:hidden;background:#16191e}
-#vp canvas{display:block;width:100%;touch-action:none}
-.row{display:flex;align-items:center;gap:10px;margin:10px 0}
+#vp{position:relative;width:100%;height:clamp(280px,58vw,520px);min-height:280px;border-radius:16px;overflow:hidden;background:#16191e}
+#vp canvas{display:block;width:100%;height:100%;touch-action:none}
+.controls{display:grid;gap:2px;margin:0 0 12px;padding:10px 12px;border:1px solid var(--border);border-radius:12px;background:var(--surface-1)}
+.row{display:flex;align-items:center;gap:10px;margin:8px 0;min-width:0}
 .row label{font-size:13px;color:var(--text-secondary);min-width:72px}
+.row input[type="range"]{min-width:0;flex:1}
+.lighting-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.lighting-row #sws{flex:1;min-width:120px}
 .sw{width:28px;height:28px;border-radius:50%;border:2px solid var(--surface-2);box-shadow:0 0 0 1px var(--border-strong);cursor:pointer;padding:0;flex:none}
 .sw.on{box-shadow:0 0 0 2px var(--text-primary)}
 .pt{display:flex;align-items:center;gap:8px;padding:9px 10px;border:0.5px solid var(--border);border-radius:var(--radius);font-size:13px;cursor:pointer;background:var(--surface-2);color:var(--text-primary);text-align:left;min-height:44px}
@@ -2630,16 +2634,23 @@ body[data-not-sent] > #vis-container ~ #not-sent {
 .dot{width:10px;height:10px;border-radius:50%;flex:none}
 .tag{margin-left:auto;font-size:11px;padding:2px 6px;border-radius:6px}
 .have{background:var(--bg-success);color:var(--text-success)}.buy{background:var(--bg-warning);color:var(--text-warning)}
+@media (max-width:420px){
+  .controls{padding:8px}
+  .row label{min-width:64px}
+  #list{grid-template-columns:1fr !important}
+}
 </style>
 <div style="padding:0.5rem 0 0;">
-<div id="vp"><div id="msg" style="padding:140px 16px;text-align:center;font-size:13px;color:#9aa3ad;">Loading 3D model…</div></div>
+<div class="controls" aria-label="Model controls">
 <div class="row" style="margin-top:14px;"><label for="zm"><i class="ti ti-zoom-in" aria-hidden="true" style="font-size:16px;vertical-align:-3px;margin-right:4px;"></i>Zoom</label><input type="range" id="zm" min="0" max="100" step="1" value="55" style="flex:1;"></div>
 <div class="row"><label for="ex">Explode</label><input type="range" id="ex" min="0" max="100" step="1" value="0" style="flex:1;"></div>
-<div class="row">
+<div class="row lighting-row">
 <button id="lt" style="font-size:13px;"><i class="ti ti-bulb" aria-hidden="true" style="font-size:16px;vertical-align:-2px;margin-right:4px;"></i><span>Underglow on</span></button>
 <div id="sws" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
 </div>
 <div class="row"><label for="br">Brightness</label><input type="range" id="br" min="5" max="100" step="1" value="70" style="flex:1;"></div>
+</div>
+<div id="vp"><div id="msg" style="padding:140px 16px;text-align:center;font-size:13px;color:#9aa3ad;">Loading 3D model…</div></div>
 <div id="info" style="background:var(--surface-1);border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.6;color:var(--text-secondary);margin:8px 0 12px;min-height:64px;">Drag to orbit, use the zoom slider or pinch. Tap a part to focus on it; tap again to see everything.</div>
 <div id="list" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;"></div>
 <p style="font-size:12px;color:var(--text-muted);margin:12px 0 0;line-height:1.5;">Units: mm. Overall ≈ 250 L × 170 W × 210 H. Pi 5, cooler, AI HAT+, PIR and 18650 sizes use published dimensions; chassis, arm, converter and strip layout are estimates. Lidar left off (phase 2).</p>
@@ -2659,9 +2670,9 @@ PP={EffectComposer:a.EffectComposer,RenderPass:b.RenderPass,UnrealBloomPass:c.Un
 }catch(e){PP=null;}
 msg.remove();
 const host=document.getElementById('vp');
-const W=host.clientWidth||360,H=Math.round(W*1.1);
+let W=Math.max(1,host.clientWidth||360),H=Math.max(1,host.clientHeight||280);
 const rn=new THREE.WebGLRenderer({antialias:true});
-rn.setPixelRatio(Math.min(2,devicePixelRatio||1));rn.setSize(W,H);
+rn.setPixelRatio(Math.min(2,devicePixelRatio||1));rn.setSize(W,H,false);
 rn.toneMapping=THREE.ACESFilmicToneMapping;rn.toneMappingExposure=1.0;
 rn.shadowMap.enabled=true;rn.shadowMap.type=THREE.PCFSoftShadowMap;
 host.appendChild(rn.domElement);
@@ -2670,6 +2681,16 @@ scene.background=new THREE.Color('#16191e');scene.fog=new THREE.Fog('#16191e',70
 const pm=new THREE.PMREMGenerator(rn);scene.environment=pm.fromScene(new RoomEnvironment(),0.04).texture;
 const ENV=.45;
 const cam=new THREE.PerspectiveCamera(30,W/H,1,4000);cam.position.set(-330,175,-370);
+const resizeRenderer=()=>{
+  const width=Math.max(1,host.clientWidth),height=Math.max(1,host.clientHeight);
+  if(width===W&&height===H)return;
+  W=width;H=height;
+  rn.setSize(W,H,false);
+  cam.aspect=W/H;cam.updateProjectionMatrix();
+  if(composer)composer.setSize(W,H);
+};
+const resizeObserver=new ResizeObserver(resizeRenderer);
+resizeObserver.observe(host);
 const ctl=new OrbitControls(cam,rn.domElement);ctl.target.set(0,95,-10);ctl.enableDamping=true;ctl.autoRotate=true;ctl.autoRotateSpeed=0.7;ctl.minDistance=150;ctl.maxDistance=900;ctl.maxPolarAngle=Math.PI*0.495;ctl.enablePan=false;
 ctl.addEventListener('start',()=>ctl.autoRotate=false);
 const key=new THREE.DirectionalLight(0xffffff,2.4);key.position.set(-240,430,-260);key.castShadow=true;key.shadow.mapSize.set(2048,2048);key.shadow.radius=5;key.shadow.bias=-0.0003;
